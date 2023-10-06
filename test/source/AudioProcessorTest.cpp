@@ -1,4 +1,4 @@
-#include <beatgone_wavesynth1/PluginProcessor.h>
+#include <BGWaveSynth/PluginProcessor.h>
 #include <gtest/gtest.h>
 
 namespace audio_plugin_test {

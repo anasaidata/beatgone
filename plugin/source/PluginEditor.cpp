@@ -1,5 +1,5 @@
-#include "beatgone_wavesynth1/PluginEditor.h"
-#include "beatgone_wavesynth1/PluginProcessor.h"
+#include "BGWaveSynth/PluginEditor.h"
+#include "BGWaveSynth/PluginProcessor.h"
 
 namespace audio_plugin {
 AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(
