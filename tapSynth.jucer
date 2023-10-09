@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="cNKSGD" name="tapSynth" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn">
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
+              displaySplashScreen="1">
   <MAINGROUP id="KMptmw" name="tapSynth">
     <GROUP id="{3C4B8AF0-CC1B-B776-74F0-C1D0B8E63F93}" name="Source">
       <FILE id="cCsQG0" name="PluginProcessor.cpp" compile="1" resource="0"
