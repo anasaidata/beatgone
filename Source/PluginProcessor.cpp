@@ -211,7 +211,7 @@ void TapSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
     }
     
     synth.renderNextBlock (buffer, midiMessages, 0, buffer.getNumSamples());
-    //synth2.renderNextBlock (buffer, midiMessages, 0, buffer.getNumSamples());
+    synth2.renderNextBlock (buffer, midiMessages, 0, buffer.getNumSamples());
 }
 
 //==============================================================================

@@ -68,7 +68,6 @@ void SynthVoice::renderNextBlock (juce::AudioBuffer< float > &outputBuffer, int 
         return;
     
     synthBuffer.setSize (outputBuffer.getNumChannels(), numSamples, false, false, true);
-    //juce::AudioBuffer<float> synthesisBufferProxy (synthBuffer.getArrayOfWritePointers(), outputBuffer.getNumChannels(), 0, numSamples);
     
     juce::dsp::AudioBlock<float> audioBlock { synthBuffer };
     osc.getNextAudioBlock (audioBlock);
@@ -80,7 +79,6 @@ void SynthVoice::renderNextBlock (juce::AudioBuffer< float > &outputBuffer, int 
     for (int channel = 0; channel < outputBuffer.getNumChannels(); ++channel)
     {
         outputBuffer.addFrom (channel, startSample, synthBuffer, channel, 0, numSamples);
-        //outputBuffer.addFrom(channel, startSample, synthBuffer, 0, 0, numSamples, 1.0f);
         
         if (! adsr.isActive())
             clearCurrentNote();
