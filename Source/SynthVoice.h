@@ -33,7 +33,7 @@ public:
     AdsrData& getAdsr() { return adsr; }
     AdsrData& getFilterAdsr() { return filterAdsr; }
     FilterData& getFilter() { return filter; }
-    
+        
 private:
     juce::AudioBuffer<float> synthBuffer;
     

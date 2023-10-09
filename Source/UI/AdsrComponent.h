@@ -41,7 +41,7 @@ private:
     std::unique_ptr<SliderAttachment> sustainAttachment;
     std::unique_ptr<SliderAttachment> releaseAttachment;
     
-    juce::Label attackLabel { "Attack", "A" };
+    juce::Label attackLabel { "Attack", "Att" };
     juce::Label decayLabel { "Decay", "D" };
     juce::Label sustainLabel { "Sustain", "S" };
     juce::Label releaseLabel { "Release", "R" };

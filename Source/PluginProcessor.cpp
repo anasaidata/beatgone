@@ -24,6 +24,10 @@ TapSynthAudioProcessor::TapSynthAudioProcessor()
 {
     synth.addSound (new SynthSound());
     synth.addVoice (new SynthVoice());
+    synth.addVoice (new SynthVoice());
+    synth2.addSound (new SynthSound());
+    synth2.addVoice (new SynthVoice());
+    synth2.addVoice (new SynthVoice());
 }
 
 TapSynthAudioProcessor::~TapSynthAudioProcessor()
@@ -105,6 +109,16 @@ void TapSynthAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
             voice->prepareToPlay (sampleRate, samplesPerBlock, getTotalNumOutputChannels());
         }
     }
+    
+    synth2.setCurrentPlaybackSampleRate (sampleRate);
+    
+    for (int i = 0; i < synth2.getNumVoices(); i++)
+    {
+        if (auto voice = dynamic_cast<SynthVoice*>(synth2.getVoice(i)))
+        {
+            voice->prepareToPlay (sampleRate, samplesPerBlock, getTotalNumOutputChannels());
+        }
+    }
 }
 
 void TapSynthAudioProcessor::releaseResources()
@@ -151,42 +165,53 @@ void TapSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
         for (int i = 0; i < synth.getNumVoices(); ++i)
         {
             if (auto voice = dynamic_cast<SynthVoice*>(synth.getVoice(i)))
-            {
-                // Osc
-                auto& oscWaveChoice = *apvts.getRawParameterValue ("OSC1WAVETYPE");
-                
-                // FM
-                auto& fmFreq = *apvts.getRawParameterValue ("OSC1FMFREQ");
-                auto& fmDepth = *apvts.getRawParameterValue ("OSC1FMDEPTH");
-                
-                // Amp Adsr
-                auto& attack = *apvts.getRawParameterValue ("ATTACK");
-                auto& decay = *apvts.getRawParameterValue ("DECAY");
-                auto& sustain = *apvts.getRawParameterValue ("SUSTAIN");
-                auto& release = *apvts.getRawParameterValue ("RELEASE");
-                
-                // Filter Adsr
-                auto& fAttack = *apvts.getRawParameterValue ("FILTERATTACK");
-                auto& fDecay = *apvts.getRawParameterValue ("FILTERDECAY");
-                auto& fSustain = *apvts.getRawParameterValue ("FILTERSUSTAIN");
-                auto& fRelease = *apvts.getRawParameterValue ("FILTERRELEASE");
-                
-                // Filter
-                auto& filterType = *apvts.getRawParameterValue ("FILTERTYPE");
-                auto& cutoff = *apvts.getRawParameterValue ("FILTERFREQ");
-                auto& resonance = *apvts.getRawParameterValue ("FILTERRES");
-                
-                // Update voice
-                voice->getOscillator().setWaveType (oscWaveChoice);
-                voice->getOscillator().updateFm (fmFreq, fmDepth);
-                voice->getAdsr().update (attack.load(), decay.load(), sustain.load(), release.load());
-                voice->getFilterAdsr().update (fAttack.load(), fDecay.load(), fSustain.load(), fRelease.load());
-                voice->updateFilter (filterType, cutoff, resonance);
-            }
+                if(auto voice2 = dynamic_cast<SynthVoice*>(synth2.getVoice(i)))
+                {
+                    // Osc
+                    auto& oscWaveChoice = *apvts.getRawParameterValue ("OSC1WAVETYPE");
+                    auto& oscWaveChoice2 = *apvts.getRawParameterValue ("OSC2WAVETYPE");
+                    
+                    // FM
+                    auto& fmFreq = *apvts.getRawParameterValue ("OSC1FMFREQ");
+                    auto& fmDepth = *apvts.getRawParameterValue ("OSC1FMDEPTH");
+                    auto& fmFreq2 = *apvts.getRawParameterValue ("OSC2FMFREQ");
+                    auto& fmDepth2 = *apvts.getRawParameterValue ("OSC2FMDEPTH");
+                    
+                    // Amp Adsr
+                    auto& attack = *apvts.getRawParameterValue ("ATTACK");
+                    auto& decay = *apvts.getRawParameterValue ("DECAY");
+                    auto& sustain = *apvts.getRawParameterValue ("SUSTAIN");
+                    auto& release = *apvts.getRawParameterValue ("RELEASE");
+                    
+                    // Filter Adsr
+                    auto& fAttack = *apvts.getRawParameterValue ("FILTERATTACK");
+                    auto& fDecay = *apvts.getRawParameterValue ("FILTERDECAY");
+                    auto& fSustain = *apvts.getRawParameterValue ("FILTERSUSTAIN");
+                    auto& fRelease = *apvts.getRawParameterValue ("FILTERRELEASE");
+                    
+                    // Filter
+                    auto& filterType = *apvts.getRawParameterValue ("FILTERTYPE");
+                    auto& cutoff = *apvts.getRawParameterValue ("FILTERFREQ");
+                    auto& resonance = *apvts.getRawParameterValue ("FILTERRES");
+                    
+                    // Update voice
+                    voice->getOscillator().setWaveType (oscWaveChoice);
+                    voice->getOscillator().updateFm (fmFreq, fmDepth);
+                    voice->getAdsr().update (attack.load(), decay.load(), sustain.load(), release.load());
+                    voice->getFilterAdsr().update (fAttack.load(), fDecay.load(), fSustain.load(), fRelease.load());
+                    voice->updateFilter (filterType, cutoff, resonance);
+                    
+                    voice2->getOscillator().setWaveType (oscWaveChoice2);
+                    voice2->getOscillator().updateFm (fmFreq2, fmDepth2);
+                    voice2->getAdsr().update (attack.load(), decay.load(), sustain.load(), release.load());
+                    voice2->getFilterAdsr().update (fAttack.load(), fDecay.load(), fSustain.load(), fRelease.load());
+                    voice2->updateFilter (filterType, cutoff, resonance);
+                }
         }
     }
     
     synth.renderNextBlock (buffer, midiMessages, 0, buffer.getNumSamples());
+    synth2.renderNextBlock (buffer, midiMessages, 0, buffer.getNumSamples());
 }
 
 //==============================================================================
@@ -227,10 +252,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout TapSynthAudioProcessor::crea
     
     // OSC select
     params.push_back (std::make_unique<juce::AudioParameterChoice>("OSC1WAVETYPE", "Osc 1 Wave Type", juce::StringArray { "Sine", "Saw", "Square" }, 0));
+    params.push_back (std::make_unique<juce::AudioParameterChoice>("OSC2WAVETYPE", "Osc 2 Wave Type", juce::StringArray { "Sine", "Saw", "Square" }, 0));
     
     // FM
     params.push_back (std::make_unique<juce::AudioParameterFloat>("OSC1FMFREQ", "Osc 1 FM Frequency", juce::NormalisableRange<float> { 0.0f, 1000.0f, 0.01f, 0.3f }, 0.0f));
     params.push_back (std::make_unique<juce::AudioParameterFloat>("OSC1FMDEPTH", "Osc 1 FM Depth", juce::NormalisableRange<float> { 0.0f, 1000.0f, 0.01f, 0.3f }, 0.0f));
+    params.push_back (std::make_unique<juce::AudioParameterFloat>("OSC2FMFREQ", "Osc 2 FM Frequency", juce::NormalisableRange<float> { 0.0f, 1000.0f, 0.01f, 0.3f }, 0.0f));
+    params.push_back (std::make_unique<juce::AudioParameterFloat>("OSC2FMDEPTH", "Osc 2 FM Depth", juce::NormalisableRange<float> { 0.0f, 1000.0f, 0.01f, 0.3f }, 0.0f));
     
     // ADSR
     params.push_back (std::make_unique<juce::AudioParameterFloat>("ATTACK", "Attack", juce::NormalisableRange<float> { 0.1f, 1.0f, 0.1f }, 0.1f));
