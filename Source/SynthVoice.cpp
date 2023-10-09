@@ -70,7 +70,7 @@ void SynthVoice::renderNextBlock (juce::AudioBuffer< float > &outputBuffer, int 
     synthBuffer.clear();
     
     synthBuffer.setSize (outputBuffer.getNumChannels(), numSamples, false, false, true);
-    juce::AudioBuffer<float> synthesisBufferProxy (synthBuffer.getArrayOfWritePointers(), 1, 0, numSamples);
+    juce::AudioBuffer<float> synthesisBufferProxy (synthBuffer.getArrayOfWritePointers(), outputBuffer.getNumChannels(), 0, numSamples);
     
     filterAdsr.applyEnvelopeToBuffer (synthesisBufferProxy, 0, numSamples);
     
