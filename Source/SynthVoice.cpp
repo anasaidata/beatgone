@@ -67,29 +67,26 @@ void SynthVoice::renderNextBlock (juce::AudioBuffer< float > &outputBuffer, int 
     if (! isVoiceActive())
         return;
     
-    synthBuffer.clear();
-    
     synthBuffer.setSize (outputBuffer.getNumChannels(), numSamples, false, false, true);
-    juce::AudioBuffer<float> synthesisBufferProxy (synthBuffer.getArrayOfWritePointers(), outputBuffer.getNumChannels(), 0, numSamples);
+    //juce::AudioBuffer<float> synthesisBufferProxy (synthBuffer.getArrayOfWritePointers(), outputBuffer.getNumChannels(), 0, numSamples);
     
-    filterAdsr.applyEnvelopeToBuffer (synthesisBufferProxy, 0, numSamples);
-    
-        
-    juce::dsp::AudioBlock<float> audioBlock { synthesisBufferProxy };
+    juce::dsp::AudioBlock<float> audioBlock { synthBuffer };
     osc.getNextAudioBlock (audioBlock);
-    adsr.applyEnvelopeToBuffer (synthesisBufferProxy, 0, numSamples);
-    filter.process (synthesisBufferProxy);
+    adsr.applyEnvelopeToBuffer (synthBuffer, 0, numSamples);
+    filterAdsr.applyEnvelopeToBuffer (synthBuffer, 0, numSamples);
+    filter.process (synthBuffer);
     gain.process (juce::dsp::ProcessContextReplacing<float> (audioBlock));
 
-    
     for (int channel = 0; channel < outputBuffer.getNumChannels(); ++channel)
     {
-        //outputBuffer.addFrom (channel, startSample, synthBuffer, channel, 0, numSamples);
-        outputBuffer.addFrom(channel, startSample, synthesisBufferProxy, 0, 0, numSamples, 1.0f);
+        outputBuffer.addFrom (channel, startSample, synthBuffer, channel, 0, numSamples);
+        //outputBuffer.addFrom(channel, startSample, synthBuffer, 0, 0, numSamples, 1.0f);
         
         if (! adsr.isActive())
             clearCurrentNote();
     }
+    
+    synthBuffer.clear();
 }
 
 void SynthVoice::updateFilter (const int filterType, const float frequency, const float resonance)
