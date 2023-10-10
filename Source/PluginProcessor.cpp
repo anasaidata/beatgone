@@ -24,10 +24,10 @@ TapSynthAudioProcessor::TapSynthAudioProcessor()
 {
     synth.addSound (new SynthSound());
     synth.addVoice (new SynthVoice());
-    synth.addVoice (new SynthVoice());
+    //synth.addVoice (new SynthVoice());
     synth2.addSound (new SynthSound());
     synth2.addVoice (new SynthVoice());
-    synth2.addVoice (new SynthVoice());
+    //synth2.addVoice (new SynthVoice());
 }
 
 TapSynthAudioProcessor::~TapSynthAudioProcessor()
@@ -205,13 +205,13 @@ void TapSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
                     voice2->getOscillator().updateFm (fmFreq2, fmDepth2);
                     voice2->getAdsr().update (attack.load(), decay.load(), sustain.load(), release.load());
                     voice2->getFilterAdsr().update (fAttack.load(), fDecay.load(), fSustain.load(), fRelease.load());
-                    voice2->updateFilter (filterType, cutoff, resonance);
+                    //voice2->updateFilter (filterType, cutoff, resonance);
                 }
         }
     }
     
     synth.renderNextBlock (buffer, midiMessages, 0, buffer.getNumSamples());
-    synth2.renderNextBlock (buffer, midiMessages, 0, buffer.getNumSamples());
+    //synth2.renderNextBlock (buffer, midiMessages, 0, buffer.getNumSamples());
 }
 
 //==============================================================================
